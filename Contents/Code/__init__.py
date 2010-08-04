@@ -17,6 +17,7 @@ ICON          = 'icon-default.png'
 
 DEFAULT_CACHE_INTERVAL = 300
 
+BASE = "http://www.abc.net.au/iview/"
 CONFIG_URL = "http://www.abc.net.au/iview/xml/config.xml"
 CONFIG = {}
 
@@ -30,7 +31,7 @@ def Start():
     global CONFIG
     
     CONFIG["api"] = GetConfigParam("api")
-    CONFIG["categories"] = GetConfigParam("categories")
+    CONFIG["categories"] = BASE + GetConfigParam("categories")
     
     try:
         SetNoFullscreen()  # iView's fullscreen interacts badly with Plex, need to disable it
@@ -78,13 +79,16 @@ def GetCategories():
 
 
 def GetAllSeriesSummaries():
+    Log("Api URL:"+CONFIG["api"] + "seriesIndex")
+	
     json = GetJSON(CONFIG["api"] + "seriesIndex")
     seriesSummaries = []
     for item in json:
+        Log(item)
         seriesSummary = {}
-        seriesSummary['id'] = item[0]
-        seriesSummary['title'] = item[1]
-        seriesSummary['keywords'] = item[4]
+        seriesSummary['id'] = item['a']
+        seriesSummary['title'] = item['b']
+        seriesSummary['keywords'] = item['e']
         seriesSummaries.append(seriesSummary)
     return seriesSummaries
 
@@ -97,28 +101,42 @@ def GetSeriesInfos(seriesIds):
     seriesInfos = {}
     for item in json:
         seriesInfo = {}
-        seriesInfos[item[0]] = seriesInfo
+        seriesInfos[item['a']] = seriesInfo
         
-        seriesInfo['id'] = item[0]
-        seriesInfo['title'] = item[1]
-        seriesInfo['thumb'] = item[3]
+        seriesInfo['id'] = item['a']
+        seriesInfo['title'] = item['b']
+        seriesInfo['thumb'] = item['d']
         seriesInfo['episodes'] = []
-        for jsonEpisode in item[5]:
+        for jsonEpisode in item['f']:
             episode = {}
-            episode['playerUrl'] = PLAYER_URL + jsonEpisode[0]
-            episode['videoAsset'] = jsonEpisode[13]
-            episode['title'] = jsonEpisode[1]
-            episode['subtitle'] = jsonEpisode[2]
-            episode['description'] = jsonEpisode[3]
-            episode['rating'] = jsonEpisode[12]
-            episode['thumb'] = item[3]
-            episode['fileSize'] = jsonEpisode[8]  # in megabytes
+            episode['playerUrl'] = PLAYER_URL + jsonEpisode['a']
+            episode['videoAsset'] = jsonEpisode['n']
+            Log("Player:"+episode['playerUrl'])
+            Log("Video:"+episode['videoAsset'])
+            episode['title'] = jsonEpisode['b']
             try:
-                episode['duration'] = int(jsonEpisode[9]) * 1000  # milliseconds
+            	episode['subtitle'] = jsonEpisode['c']
+            except:
+            	episode['subtitle'] = None
+            try:
+            	episode['description'] = jsonEpisode['d']
+            except:
+            	episode['description'] = None
+            try:
+            	episode['rating'] = jsonEpisode['m']
+            except:
+            	episode['rating'] = None
+            episode['thumb'] = item['d']
+            try:
+            	episode['fileSize'] = jsonEpisode['i']  # in megabytes
+            except:
+            	episode['fileSize'] = 0
+            try:
+                episode['duration'] = int(jsonEpisode['j']) * 1000  # milliseconds
             except:
                 episode['duration'] = 0
-            episode['uploaded'] = strptime(jsonEpisode[5], "%Y-%m-%d %H:%M:%S")
-            episode['expires'] = strptime(jsonEpisode[6], "%Y-%m-%d %H:%M:%S")
+            episode['uploaded'] = strptime(jsonEpisode['f'], "%Y-%m-%d %H:%M:%S")
+            episode['expires'] = strptime(jsonEpisode['g'], "%Y-%m-%d %H:%M:%S")
 #            episode['broadcast'] = strptime(jsonEpisode[7], "%Y-%m-%d %H:%M:%S")
             seriesInfo['episodes'].append(episode)
     return seriesInfos
@@ -200,7 +218,7 @@ def SeriesMenu(sender, seriesId, title2):
         
         description += "Expires " + DescribeDateTime(episode['expires']) + "\n\n"
         description += "\n" + episode['description'] + "\n"
-        if len(episode['rating']) > 0:
+        if episode['rating'] != None and len(episode['rating']) > 0:
            description += "\nRated " + episode['rating'] + "\n"           
     
         dir.Append(WebVideoItem(episode['playerUrl'], title=episode['title'], subtitle=episode['subtitle'],
