@@ -12,7 +12,7 @@ import re
 VIDEO_PREFIX = "/video/abciview"
 NAME = L('Title')
 
-ART           = 'art-default.png'
+ART           = 'art-default.jpg'
 ICON          = 'icon-default.png'
 
 DEFAULT_CACHE_INTERVAL = 300
