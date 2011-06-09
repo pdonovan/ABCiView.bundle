@@ -19,10 +19,14 @@
 	<key>PlexClientPlatforms</key>
 	<string>MacOSX,LGTV</string>
 	<key>PlexFrameworkVersion</key>
-	<string>1</string>
-	<key>PlexPluginDebug</key>
+	<string>2</string>
+	<key>PlexPluginConsoleLogging</key>
 	<string>1</string>
 	<key>PlexPluginMode</key>
 	<string>AlwaysOn</string>
+	<key>PlexMediaContainer</key>
+	<array>
+		<string>Flash</string>
+	</array>
 </dict>
 </plist>
