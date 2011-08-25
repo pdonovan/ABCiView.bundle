@@ -28,5 +28,9 @@
 	<array>
 		<string>Flash</string>
 	</array>
+	<key>PlexPluginRegions</key>
+	<array>
+		<string>AU</string>
+	</array>
 </dict>
 </plist>
