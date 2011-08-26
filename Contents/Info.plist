@@ -17,7 +17,7 @@
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>PlexClientPlatforms</key>
-	<string>MacOSX,LGTV</string>
+	<string>MacOSX</string>
 	<key>PlexFrameworkVersion</key>
 	<string>2</string>
 	<key>PlexPluginConsoleLogging</key>
@@ -28,6 +28,13 @@
 	<array>
 		<string>Flash</string>
 	</array>
+	<key>PlexClientCapabilities</key>
+	<dict>
+		<key>protocols</key>
+		<array>
+			<string>webkit</string>
+		</array>
+	</dict>
 	<key>PlexPluginRegions</key>
 	<array>
 		<string>AU</string>
